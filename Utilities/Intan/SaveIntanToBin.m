@@ -13,6 +13,10 @@ function SaveIntanToBin(varargin)
         filepath = varargin{1};
     end
     IntanData = read_Intan_RHD2000_file(filepath);
-    Bin = ConvertIntanMatToRawBinary(IntanData);
-    SaveBinary(Bin,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Bin']);
+    %% Save Spiking Data
+%     Bin = ConvertIntanMatToRawBinary(IntanData);
+%     SaveBinary(Bin,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Bin']);
+    %% Save Stimulation Matrix
+    Stim = IntanData.board_adc_data;
+    SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim']);
 end
