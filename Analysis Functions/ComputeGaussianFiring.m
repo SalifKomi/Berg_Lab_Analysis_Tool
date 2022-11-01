@@ -1,10 +1,18 @@
 %% Function Library
-function [GFiring] = ComputeGaussianFiring(SpikingEventT,w,fs,t_max)
-%% Define Gaussian Window
+function [GFiring,SpikeTrain] = ComputeGaussianFiring(SpikingEventT,w,fs,ROI)
 
-t = -(fs/1000)*4*w:(fs/1000)*4*w;
-kt = (1/sqrt(2*pi*(fs/1000)*w))*exp(-(t.^2/(2*((fs/1000)*w)^2)));
-SpikeTrain = zeros(t_max,1);
-SpikeTrain(SpikingEventT) = 1;
+if(isempty(ROI))
+     ME = MException('MyComponent:noSuchVariable','Variable %s not found','ROI');
+     throw(ME)
+end
+
+%% Define Gaussian Window
+theta = (w*fs)/1000;
+t = -4*theta:theta*4;
+kt = (1000/(sqrt(2*pi)*w))*exp(-(t.^2/(2*theta^2)));
+SpikeTrain = zeros((ROI(2)-ROI(1)+1),1);
+SpikingEventT = SpikingEventT((SpikingEventT < ROI(2)) & (SpikingEventT > ROI(1)));
+SpikeTrain(SpikingEventT-ROI(1)) = 1;
 GFiring = conv(kt,SpikeTrain);
 GFiring = GFiring((length(t)/2):length(GFiring)-(length(t)/2));
+end
