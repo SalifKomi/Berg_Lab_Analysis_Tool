@@ -1,11 +1,11 @@
-path = '/media/pingvin/Elements/Neuropixel Data/RAT148/*DAY1/*/AlignedData';%'/home/pingvin/Documents/NeuropixelData/Day 2/CombinedAll';
-SavePath = '/media/pingvin/Elements/Neuropixel Data/RAT148/DAY1/CombinedWalking';
+path = '/media/pingvin/Elements/Neuropixel Data/RAT161/*DAY2/*/AlignedData';%'/home/pingvin/Documents/NeuropixelData/Day 2/CombinedAll';
+SavePath = '/media/pingvin/Elements/Neuropixel Data/RAT161/DAY2/CombinedRotating';
 FolderContent = path;
 
 %% Dataset Name and content
-Name = 'RAT148_DAY2_CombinedWalking_';
-types = {'Rec','Lfp'}; % Can be 'Stim', 'Acc', 'Rec' ,'Data'
-RecToCombine = 1:8;%length(flist)-2;
+Name = 'RAT161_DAY2_CombinedRotating_';
+types = {'Rec','Stim','Data'}; % Can be 'Stim', 'Acc', 'Rec' ,'Data'
+RecToCombine = 13:14;%length(flist)-2;
 %%
 for Type = types
 Type = Type{1};

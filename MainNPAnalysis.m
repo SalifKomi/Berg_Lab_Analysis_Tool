@@ -19,10 +19,15 @@ Ops.TotTrial = 1;
 Ops.Trial = [1]; % Format this as [the recordings ref# to include]
 
 %%%% Flags for Loading %%%
-Ops.flagspike = 1; % Flag to load and process spiking data. MUST BE 1
+%%% Flag Neurpixel Related %%%
+Ops.flagspike = 0; % Flag to load and process spiking data. MUST BE 1
 Ops.flaglfp = 0;
-Ops.flagrec = 0;
-Ops.flagstim = 0; % Flag to load and process kinematic data. is 1 if kin csv
+%%% Flag Intan Related %%%
+Ops.flagrec = 1;
+Ops.flagstim = 1; % Flag to load and process kinematic data. is 1 if kin csv
+Ops.flagacc = 1;
+Ops.flagneural = 1; % Data recorded on ADC of intan
+%%% Other Flags %%%
 Ops.flagusecombined = 0;
 Ops.flagvid = 0;
 Ops.flagkin = 0;
@@ -60,7 +65,7 @@ Folder = uigetdir(); %% Always a recording
 [Data,Ops] = PreProcessDataset(Data,Ops);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%% Sanity checks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PlotOrderedRaster(Data,Ops,'Mode','Units','Save',0)
+PlotOrderedRaster(Data,Ops,'Mode','Channels','Save',0)
 %PlotSanityCheck
 %% %%%%%%%%%%%%%%%%%%%%%%%%% START ANALYSIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -76,5 +81,4 @@ PlotOrderedRaster(Data,Ops,'Mode','Units','Save',0)
 %AnalysisPerStim
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%% MAKE VIDEO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-MakeVideo 
+MakeThetaVideo 

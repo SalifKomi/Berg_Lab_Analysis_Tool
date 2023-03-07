@@ -1,5 +1,5 @@
 
-function CombineBinFiles(flist,SavePath,Filename)
+function CombineBinFiles(flist,SavePath,Filename,format)
     mkdir(SavePath)
     fid_write = fopen([SavePath '/' Filename '.bin'], 'w');
     for j = 1:length(flist)

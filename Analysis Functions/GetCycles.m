@@ -13,7 +13,7 @@ n=1;
 Cycles = struct();
 %% Start Event Detection
 PCA = diff(PC2mov-PC1mov);
-[~,IndS] = findpeaks(abs(PCA),'MinPeakHeight',std(PCA),'MinPeakDistance',interval);
+[~,IndS] = findpeaks(abs(PCA),'MinPeakHeight',0.5*std(PCA),'MinPeakDistance',interval);
 for j = IndS'
     if PCA(j) < 0 
         Cycles.Start(n) = j;

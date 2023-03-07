@@ -19,7 +19,7 @@ end
         Data.clusters_id = Data.clusters_info{1,1};
         Data.clusters_id = Data.clusters_id([find(contains(string(Data.clusters_info{9,:}),'good'))]);
         Data.clusters_channels = Data.clusters_info{6,1};
-        Data.clusters_channels = Data.clusters_channels([find(contains(string(Data.clusters_info{9,:}),'good'))]);        
+        Data.clusters_channels = Data.clusters_channels([find(contains(string(Data.clusters_info{9,:}),'good'))]); 
     end
     
     if Ops.flaglfp 
@@ -28,7 +28,7 @@ end
         fclose(lfp_fid);    
         lfp = reshape(lfp,384,length(lfp)/384);
         lfp = lfp';
-        Data.lfp = lfp; 
+        Data.lfpUnFilt = lfp; 
     end
 %%%%%%%%%%%%%%%%%%%%%%%% LOAD REC REF FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     if Ops.flagrec
@@ -43,7 +43,25 @@ end
        Data.stim_times = fread(stim_times_fid,'double');
        fclose(stim_times_fid);   
     end 
-%%%%%%%%%%%%%%%%%%%%%%% LOAD KINEMATIC DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+%%%%%%%%%%%%%%%%%%%%%%% LOAD ACCELEROMETER DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if Ops.flagacc
+       acc_times_fid = fopen([FileContent(1).folder filesep FileContent(contains({FileContent.name},'Acc')).name]);
+       Data.AccUnFilt = fread(acc_times_fid,'double');
+       Data.AccUnFilt = reshape(Data.AccUnFilt,[length(Data.rec_times),length(Data.AccUnFilt)/length(Data.rec_times)]);
+       fclose(acc_times_fid);   
+    end       
+    
+%%%%%%%%%%%%%%%%%%%%%%% LOAD INTAN NEURAL DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if Ops.flagneural
+       neural_times_fid = fopen([FileContent(1).folder filesep FileContent(contains({FileContent.name},'Neural')).name]);
+       Data.NeuralUnFilt = fread(neural_times_fid,'int16');
+       Data.NeuralUnFilt = reshape(Data.NeuralUnFilt,[length(Data.rec_times),length(Data.NeuralUnFilt)/length(Data.rec_times)]);
+       fclose(neural_times_fid);   
+    end  
+    
+    
+%%%%%%%%%%%%%%%%%%%%%% LOAD KINEMATIC DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if Ops.flagkin
         if any([FileContent(1).folder filesep '*xypts.csv'])
             ind = find(contains({FileContent.name},'xypts.csv'));
@@ -51,6 +69,7 @@ end
             Data.KinCoord = resampc(size(Data.KinCoord,1),Data.KinCoord,size(Data.KinCoord,1)*(Ops.fs/Ops.kfs));
         end
     end
+    
 %%%%%%%%%%%%%%%%%%%%%%% LOAD VIDEO OBJECT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if Ops.flagvid 
         vid = dir([Folder '/*.mp4']);

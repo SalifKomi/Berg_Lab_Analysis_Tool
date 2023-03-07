@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%% SCRIPT BY SALIF KOMI - BERG LAB 2022 %%%%%%%%%%%%%%%%%%%%%
 
-function SaveIntanToBin(varargin)  
+function [varargout] = SaveIntanToBin(varargin)  
     if(isempty(varargin))
         [file, path, filterindex] = ...
         uigetfile('*.rhd', 'Select an RHD2000 Data File', 'MultiSelect', 'off');
@@ -16,7 +16,7 @@ function SaveIntanToBin(varargin)
     %% Save Spiking Data
     if(~isempty(IntanData.amplifier_channels))
             Bin = ConvertIntanMatToRawBinary(IntanData);
-            SaveBinary(Bin,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Bin'],'int16');
+            SaveBinary(Bin,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Neural'],'int16');
     end
     %% Save Accelerometers
     if(~isempty(IntanData.aux_input_channels))
@@ -25,14 +25,25 @@ function SaveIntanToBin(varargin)
     end 
     %% Save Stimulation Matrix       if(size(IntanData.boar_adc_data,1) > 1)
     if(~isempty(IntanData.board_adc_data))
-            if(size(IntanData.board_adc_data,1) > 0) 
-                 Stim = IntanData.board_adc_data(1,:);
-                 SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
+            if(size(IntanData.board_adc_data,1) > 1) 
+                 Rec = IntanData.board_adc_data(2,:);
+                 SaveBinary(Rec,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
+            else
+                 Rec = IntanData.board_adc_data(1,:);
+                 SaveBinary(Rec,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
             end
         %% Video Trigger 
-           if(size(IntanData.board_adc_data,1) > 1) 
-                Vid = IntanData.board_adc_data(2,:);
-                SaveBinary(Vid,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
+           if(size(IntanData.board_adc_data,1) > 0) 
+                Stim = IntanData.board_adc_data(1,:);
+                SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
+%            else
+%                 Stim = IntanData.board_adc_data(1,:);
+%                 SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
            end
     end
+    
+    Amplength = length(IntanData.amplifier_channels);
+    Auxlength = length(IntanData.aux_input_channels);    
+    ADClength = size(IntanData.board_adc_data,1);
+    varargout = {Amplength,Auxlength,ADClength};
 end

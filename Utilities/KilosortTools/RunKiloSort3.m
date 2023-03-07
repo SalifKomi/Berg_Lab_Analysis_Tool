@@ -28,9 +28,9 @@ end
     % main parameter changes from Kilosort2 to v2.5
     ops.sig        = 20;  % spatial smoothness constant for registration
     ops.fshigh     = 300; % high-pass more aggresively
-    ops.nblocks    = 3; % blocks for registration. 0 turns it off, 1 does rigid registration. Replaces "datashift" option. 
+    ops.nblocks    = 0; % blocks for registration. 0 turns it off, 1 does rigid registration. Replaces "datashift" option. 
     % main parameter changes from Kilosort2.5 to v3.0
-    ops.Th       = [9 6];
+    ops.Th       = [9 9];
     % find the binary file
     ops.fbinary  = [rootZ filesep Data];
     

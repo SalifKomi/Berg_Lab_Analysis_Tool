@@ -1,4 +1,4 @@
-function SortingIndices = GetFiringPhaseSorting(FiringMatrix,Ops,varargin)
+function [SortingIndices,varargout] = GetFiringPhaseSorting(FiringMatrix,Ops,varargin)
     Method = 'Correlation';
     Source = sum(FiringMatrix,2);
     for ii = 1:2:length(varargin)
@@ -27,10 +27,9 @@ function SortingIndices = GetFiringPhaseSorting(FiringMatrix,Ops,varargin)
 
             scores =rem((scores.*2*pi)./short,2*pi);
             
-            [~,CorrSorting] =  sort(scores,'ascend');
-%             SortedFiring = FiringMatrix(:,CorrSorting);
+            [scoresS,CorrSorting] =  sort(scores,'ascend');
             SortingIndices = CorrSorting;
-            
+            varargout = {scores};
         case 'Coherence'                
             %% Get Series with most rythmical activity
             Cohr = [];
@@ -38,7 +37,9 @@ function SortingIndices = GetFiringPhaseSorting(FiringMatrix,Ops,varargin)
                 [~,Coh,~] = ComputeCoherence(Source,FiringMatrix(:,ii),10,1/Ops.fs,5);
                 Cohr = [Cohr Coh];
             end
-            [~,CohSorting] =  sort(Cohr,'ascend');
+            scores =rem((Cohr.*2*pi)./range(Cohr),2*pi);
+            [Cohr,CohSorting] =  sort(Cohr,'ascend');
             SortingIndices = CohSorting;
+            varargout = {Cohr};
     end
 end

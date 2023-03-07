@@ -3,9 +3,11 @@
 %%%%%%%%%%%%%%%%%%%%%% ANALYSIS PER CYCLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Extract Cycles
-[PC,Cycles] = GetCycles(s,Ops.fs/8,Ops.fs);%GetNormalizeMatrixColumn(Data.PCs)
+[PC,Cycles] = GetCycles(Data.PCs,Ops.fs/10,Ops.fs);%GetNormalizeMatrixColumn(Data.PCs)
 Cycles = CheckCycles(Cycles);
-[GCycles,BCycles] = ExtractCyclesIndices(Cycles,0.1,2,Ops.fs);
+[GCycles,BCycles] = ExtractCyclesIndices(Cycles,0.2,2,Ops.fs);
+SortingIndices = GetFiringPhaseSorting(Data.UFiring,Ops,'Method','Correlation','Source',Data.PCs(:,1));     
+
 %%
 if Ops.flagstim
     %% Analyse Per Cycle - Determine presence of full cycles during 
@@ -79,8 +81,8 @@ Conditions = {'Stim Off','Stim On'};
 
 CyclePhase = CyclePhaseUn(:,SortingIndices);
 MeanPhase = MeanPhaseUn(SortingIndices);
-cluster_id = clusters_id(SortingIndices);
-cluster_chan = clusters_channels(SortingIndices);
+cluster_id = Data.clusters_id(SortingIndices);
+clusters_chan = Data.clusters_channels(SortingIndices);
 
 
 %%
@@ -110,7 +112,7 @@ xticklabels({'Stim OFF','Stim ON'});
 ylabel('Stim-Cycle Overlap [%]');
 xtickangle(30);
 axis square
-save2pdf(fig,[FileContent(1).folder filesep 'Figures'],['StimCycleOverlap']);
+%save2pdf(fig,[FileContent(1).folder filesep 'Figures'],['StimCycleOverlap']);
 
 
 %% Plot Cycle Duration distribution
@@ -146,25 +148,26 @@ title('Cycle Duration VS Mean Absolute Deviation');
 
 %% Plot Cluster Spatial Distribution
 fig = figure('Color','white','Position',[0,0,Ops.screensize(3)/4, Ops.screensize(4)]);
+cluster_chan = clusters_chan+1;
 wcc = cluster_chan/max(cluster_chan);
-for q = 1:length(chan_pos)
-    patch([chan_pos(q,1)-10 chan_pos(q,1)+10 chan_pos(q,1)+10 chan_pos(q,1)-10],[chan_pos(q,2)-10 chan_pos(q,2)-10 chan_pos(q,2)+10 chan_pos(q,2)+10],[0 0 0],'FaceAlpha',0.2,'FaceColor',Colors().BergBlack)
+for q = 1:length(Data.chan_pos)
+    patch([Data.chan_pos(q,1)-10 Data.chan_pos(q,1)+10 Data.chan_pos(q,1)+10 Data.chan_pos(q,1)-10],[Data.chan_pos(q,2)-10 Data.chan_pos(q,2)-10 Data.chan_pos(q,2)+10 Data.chan_pos(q,2)+10],[0 0 0],'FaceAlpha',0.2,'FaceColor',Colors().BergBlack)
     hold on
 end
 
 
-for k = 1:size(clusters_chan,2)
+for k = 1:size(cluster_chan,2)
     X = [];
     Y = [];
     C = [];
     for l = 1:size(CyclePhase,1) 
-        X = [X chan_pos(cluster_chan(k),1)+randsample([-10:0.5:10],1,true)];
-        Y = [Y chan_pos(cluster_chan(k),2)+randsample([-10:0.5:10],1,true)];
+        X = [X Data.chan_pos(cluster_chan(k),1)+randsample([-10:0.5:10],1,true)];
+        Y = [Y Data.chan_pos(cluster_chan(k),2)+randsample([-10:0.5:10],1,true)];
         C = [C; (Colors().BergBlue.*wcc(k) + Colors().BergOrange.*(1-wcc(k)))/2];
     end        
     scatter(X,Y,40,C,'filled','MarkerFaceAlpha',0.3);
-    %hold on
-    %quiver(chan_pos(cluster_chan,1),chan_pos(cluster_chan,2),100*cos(MeanPhase)',100*sin(MeanPhase)',0,'LineWidth',2,'Color',Colors().BergBlue);
+    hold on
+    quiver(Data.chan_pos(cluster_chan,1),Data.chan_pos(cluster_chan,2),100*cos(MeanPhase)',100*sin(MeanPhase)',0,'LineWidth',2,'Color',Colors().BergBlue);
 end
 axis equal 
 set(gca, 'YDir','reverse')
@@ -305,7 +308,7 @@ save2pdf(fig,[FileContent(1).folder filesep 'Figures'],['FiringRatesSorted']);
 
 %% Raster Plot
 fig = figure('Color',Colors().BergGray09,'Position',[0,0,Ops.screensize(3)/1, Ops.screensize(4)/1],'Color',Colors().BergGray09);
-[cluster_chan,SortingIndices] = sort(Data.clusters_channels);
+%[cluster_chan,SortingIndices] = sort(Data.clusters_channels);
 wcc = cluster_chan/max(cluster_chan);
 C = ((1-wcc)*Colors().BergYellow + (wcc)*Colors().BergBlue);
 
@@ -329,14 +332,14 @@ set(gca, 'YDir','reverse')
 set(gca, 'Color', Colors().BergGray09);
 axis([ 0 size(Raster,2) 0 size(Raster,1)])
 yalim = ylim;
-%cellfun(@(x,y) patch([GoodCycles{x}(1) GoodCycles{x}(end) GoodCycles{x}(end) GoodCycles{x}(1)],[yalim(1) yalim(1) yalim(2) yalim(2)],Colors().BergBlue/y,'EdgeColor','white','FaceAlpha',0.4),num2cell(cell2mat(SpeedInd)),num2cell(col));
+cellfun(@(x,y) patch([GoodCycles{x}(1) GoodCycles{x}(end) GoodCycles{x}(end) GoodCycles{x}(1)],[yalim(1) yalim(1) yalim(2) yalim(2)],Colors().BergBlue/y,'EdgeColor','white','FaceAlpha',0.4),num2cell(cell2mat(SpeedInd)),num2cell(col));
 %save2pdf(fig,[Ops.DataFolder filesep 'Figures'],['SpinalSymphony_UnitSpace_5Blocks']);
 
 %%
 function surfx(PC,x)
     C1 = [vecnorm(diff(PC(x,1:2))') 0];         
     Col1 = [C1/max(C1)];
-    scatter3(PC(x(1:50:end),1),PC(x(1:50:end),2),PC(x(1:50:end),3),10000,Col1(1:50:end),'filled','MarkerFaceAlpha',0.1);
+    scatter3(PC(x(1:50:end),1),PC(x(1:50:end),2),PC(x(1:50:end),3),100,Col1(1:50:end),'filled','MarkerFaceAlpha',0.1);
 
    % surface([PC(x,1)';PC(x,1)'],[PC(x,2)';PC(x,2)'],[zeros(length(PC(x,3)),1)';zeros(length(PC(x,3)),1)'],[Col1;Col1],,'FaceColor','none','EdgeColor','interp','Linewidth',2,'FaceAlpha',0.1);
 end

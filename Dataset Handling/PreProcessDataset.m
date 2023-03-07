@@ -19,12 +19,30 @@ function [Data,Ops] = PreProcessDataset(Data,Ops)
     end
 
     if Ops.flaglfp
-        [bl,al] = butter(3,30/(2*Ops.fs),'low');
-        [bh,ah] = butter(3,1/(2*Ops.fs),'high');
-        Data.lfp =  filtfilt(bl,al,Data.lfp);
-        Data.lfp = filtfilt(bh,ah,Data.lfp);
-        Data.lfp = Data.lfp(Ops.ROIt(1):Ops.ROIt(2),:);
+        [bl,al] = butter(3,30/(Ops.fs/2),'low');
+        [bh,ah] = butter(3,1/(Ops.fs/2),'high');
+        templfp =  filtfilt(bl,al,Data.lfpUnFilt);
+        templfp = filtfilt(bh,ah,templfp);
+        Data.lfp = templfp(Ops.ROIt(1):Ops.ROIt(2),:);
     end
+    
+    if Ops.flagacc
+        [bl,al] = butter(3,30/(Ops.fs/2),'low');
+        [bh,ah] = butter(3,1/(Ops.fs/2),'high');
+        tempAcc=  filtfilt(bl,al,Data.AccUnFilt);
+        tempAcc = filtfilt(bh,ah,tempAcc);
+        Data.Acc = tempAcc(Ops.ROIt(1):Ops.ROIt(2),:);
+    end
+    
+    if Ops.flagneural
+        [bl,al] = butter(2,15/(Ops.fs/2),'low');
+        [bh,ah] = butter(2,5/(Ops.fs/2),'high');
+        tempNeural =  filtfilt(bl,al,Data.NeuralUnFilt);
+        tempNeural = filtfilt(bh,ah,tempNeural);
+        Data.Neural = tempNeural(Ops.ROIt(1):Ops.ROIt(2),:);
+    end
+    
+    
     
     if Ops.flagspike
         Ops.pcts = double(ceil(range(Data.chan_pos(:,2))/100)); % spatial percentage
@@ -40,16 +58,25 @@ function [Data,Ops] = PreProcessDataset(Data,Ops)
         %% Compute Channel Mean Firing
         [Cc,id] = sort(Data.clusters_channels);
         D = Data.UFiring(:,id);
+        S = Data.USpiking(:,id);
+        
         inter =  SplitVec([Cc D'],1);
         inter2 = cellfun(@(x) sum(x,1),inter','UniformOutput',false);
         Data.CFiring = cell2mat(inter2')';
+        Data.CFiring(1,:) = [];
+        
+        interS =  SplitVec([Cc D'],1);
+        interS2 = cellfun(@(x) any(x,1),interS','UniformOutput',false);
+        Data.CSpiking= double(cell2mat(interS2')');
+        Data.CSpiking(1,:) = [];
+        
+        Data.CChannels = unique(Cc,'stable');
         %%
         Data.UoI = GetThreshUnits(Data.UFiring,Ops.Thresh);
-        %Data.NormUFiring = GetNormalizeMatrixColumn(Data.UFiring);
         Data.NormUFiring = GetNormalizeMatrixColumn(Data.UFiring - movmean(Data.UFiring,Ops.fs/2));
         %%  Perform PCA 
         %[Data.NormPCc,Data.NormPCs,Data.NormPCl] =  pca(Data.NormUFiring - movmean(Data.NormUFiring,Ops.fs)); % pca(Data.UFiring);   
-        [Data.PCc,Data.PCs,Data.PCl] =  pca(Data.UFiring - movmean(Data.UFiring,Ops.fs/2)); % pca(Data.UFiring);   
+        [Data.PCc,Data.PCs,Data.PCl] = pca(Data.UFiring - movmean(Data.UFiring,Ops.fs/2)); % pca(Data.UFiring);   
         %Data.CorrectedNormPC = Data.NormPCs - movmean(Data.NormPCs,0.75*Ops.fs);
         Data.CorrectedPC = Data.PCs - movmean(Data.PCs,0.75*Ops.fs);
         %Data.SortingIndices = GetFiringPhaseSorting(Data.UFiring,Ops);   
