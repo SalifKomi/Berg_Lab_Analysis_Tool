@@ -4,11 +4,11 @@ intan_fs = 20000;
 lfp_fs = 2500;
 aux_fs = 5000;
 video_fs = 30;
-target_fs = intan_fs;
+target_fs = np_fs;
 channel_number = 384;
 %% Search Files in Folder
 FolderContent = uigetdir(); 
-RecList = dir(fullfile(FolderContent,'*freezing*'));
+RecList = dir(fullfile(FolderContent,['*Combined']));
 %% Concatenate RHD Files for all Recording and Extract Stim, Rec, and Accel Data In Separated Files RUN ONCE!!
 for el = 1:length(RecList)
     Name = split(RecList(el).folder,'/');

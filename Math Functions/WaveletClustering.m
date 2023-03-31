@@ -46,9 +46,9 @@ function Data =  WaveletClustering(Data,varargin)
     k = full(sum(umaptot.search_graph));
     twom = sum(k);
     B = umaptot.search_graph - k'*k/twom;
-    [inter,Q,n_it] = iterated_genlouvain(B,10000,0,1,'moverandw',[]);
+    [inter,Q,n_it] = iterated_genlouvain(B,30000,0,1,'moverandw',[]);
 
-    %inter = GCStabilityOpt(full(umaptot.search_graph),1);    
+    inter = GCStabilityOpt(full(umaptot.search_graph),0.5:0.1:1);    
     Data.Template_Cluster = zeros(size(Data.templates,1),size(inter,2));
     for jj = 1:size(inter,1)
         Data.Template_Cluster(TSet(jj)+1,:) = inter(jj,:); 

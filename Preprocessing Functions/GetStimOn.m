@@ -1,8 +1,9 @@
 
 function [stim_on] = GetStimOn(stim_times,fs)
-    stim_times = envelope(abs(diff(stim_times)),round(fs/25),'peak');
+    stim_times = envelope(abs(diff(stim_times)),round(fs/20),'peak');
+    stim_times(stim_times < 0) = 0;
     st = zeros(1,length(stim_times));
-    st(stim_times > 1.5*std(stim_times)) = 1;
+    st(stim_times > min(stim_times)+0.5*range(stim_times)) = 1;
 
     %st(stim_times > min(stim_times) + 1.2*std(stim_times)) = 1;
 %     diff_stim_times = diff(st);

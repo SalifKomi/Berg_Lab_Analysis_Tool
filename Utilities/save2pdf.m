@@ -13,7 +13,7 @@ set(fig,'Color',gca().Color);
 if ~exist(SavePath, 'dir')
     mkdir(SavePath)
 end 
-set(fig, 'InvertHardcopy', 'off');
+set(fig, 'InvertHardcopy', 'on');
 print(fig,[SavePath filesep filename],format);
 %exportgraphics(fig,[SavePath '\' filename '.' format])
 end

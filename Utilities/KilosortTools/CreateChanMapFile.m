@@ -16,20 +16,21 @@ kcoords = [];
 switch Probe
    case 'NeuronexusBerg16x8'    
         load('/home/pingvin/Berg_Lab_Analysis_Tool/Utilities/KilosortTools/ChannelMaps/NeuronexusBerg16x8.mat')
-        fs = 20000;
+        fs = SamplingFreq;
         Nchannels = length(xcoords);
    case 'Neuronexus'
         load('/home/pingvin/Berg_Lab_Analysis_Tool/Utilities/KilosortTools/ChannelMaps/Neuronexus.mat')
-        fs = 20000;
+        fs = SamplinfFreq;
         Nchannels = length(xcoords);
    case 'Linear32'
         load('/home/pingvin/Berg_Lab_Analysis_Tool/Utilities/KilosortTools/ChannelMaps/Linear32kilosortChanMap.mat')
-        fs = 20000;
+        fs = SamplingFreq;
         Nchannels = length(xcoords);      
    case 'Neuropixel'   
         load('/home/pingvin/Berg_Lab_Analysis_Tool/Utilities/KilosortTools/ChannelMaps/neuropixPhase3B2_kilosortChanMap.mat')
-        fs = 30000;
-        Nchannels = length(xcoords);
+        fs = SamplingFreq;
+        Nchannels = length(xcoords)+1;
+        %connected(120:end) = 0;
     otherwise       
     Nchannels = 128;
     fs = SamplingFreq;

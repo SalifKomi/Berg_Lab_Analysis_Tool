@@ -35,8 +35,8 @@ function [Data,Ops] = PreProcessDataset(Data,Ops)
     end
     
     if Ops.flagneural
-        [bl,al] = butter(2,15/(Ops.fs/2),'low');
-        [bh,ah] = butter(2,5/(Ops.fs/2),'high');
+        [bl,al] = butter(3,15/(Ops.fs/2),'low');
+        [bh,ah] = butter(3,5/(Ops.fs/2),'high');
         tempNeural =  filtfilt(bl,al,Data.NeuralUnFilt);
         tempNeural = filtfilt(bh,ah,tempNeural);
         Data.Neural = tempNeural(Ops.ROIt(1):Ops.ROIt(2),:);

@@ -13,7 +13,7 @@ end
 
 p = 1:1:l;
 xq = 1:l/q:l;
-for k = 1:min(size(epoch))
+for k = 1:size(epoch,2)
     reEpoch = interp1(p,epoch(:,k),xq,type);
     if length(reEpoch) ~= q
         fill = reEpoch(end);

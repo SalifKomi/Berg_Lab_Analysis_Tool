@@ -20,20 +20,20 @@ Ops.Trial = [1]; % Format this as [the recordings ref# to include]
 
 %%%% Flags for Loading %%%
 %%% Flag Neurpixel Related %%%
-Ops.flagspike = 0; % Flag to load and process spiking data. MUST BE 1
+Ops.flagspike = 1; % Flag to load and process spiking data. MUST BE 1
 Ops.flaglfp = 0;
 %%% Flag Intan Related %%%
-Ops.flagrec = 1;
-Ops.flagstim = 1; % Flag to load and process kinematic data. is 1 if kin csv
-Ops.flagacc = 1;
-Ops.flagneural = 1; % Data recorded on ADC of intan
+Ops.flagrec = 0;
+Ops.flagstim = 0; % Flag to load and process kinematic data. is 1 if kin csv
+Ops.flagacc = 0;
+Ops.flagneural = 0; % Data recorded on ADC of intan
 %%% Other Flags %%%
 Ops.flagusecombined = 0;
 Ops.flagvid = 0;
 Ops.flagkin = 0;
 
 %%%%%% Dataset Parameters %%%%%%
-Ops.fs = 20000; % Neural + Stim + Acc Data Acquisition Sampling Rate 
+Ops.fs = 30000; % Neural + Stim + Acc Data Acquisition Sampling Rate 
 Ops.vfr = 25; % Video Sampling FrameRate
 Ops.kfs = 150; % Kinematic Sampling Rate
 
@@ -63,7 +63,6 @@ Folder = uigetdir(); %% Always a recording
 
 %% %%%%%%%%%%%%%%%%%%%%%%%% PreProcess Data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 [Data,Ops] = PreProcessDataset(Data,Ops);
-
 %% %%%%%%%%%%%%%%%%%%%%%%%%% Sanity checks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PlotOrderedRaster(Data,Ops,'Mode','Channels','Save',0)
 %PlotSanityCheck

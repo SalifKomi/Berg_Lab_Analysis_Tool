@@ -25,20 +25,20 @@ function [varargout] = SaveIntanToBin(varargin)
     end 
     %% Save Stimulation Matrix       if(size(IntanData.boar_adc_data,1) > 1)
     if(~isempty(IntanData.board_adc_data))
-            if(size(IntanData.board_adc_data,1) > 1) 
-                 Rec = IntanData.board_adc_data(2,:);
-                 SaveBinary(Rec,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
-            else
+            if(size(IntanData.board_adc_data,1) > 0) 
                  Rec = IntanData.board_adc_data(1,:);
                  SaveBinary(Rec,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
+%             else
+%                  Rec = IntanData.board_adc_data(1,:);
+%                  SaveBinary(Rec,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Rec'],'double');
             end
         %% Video Trigger 
-           if(size(IntanData.board_adc_data,1) > 0) 
+           if(size(IntanData.board_adc_data,1) > 1) 
+                Stim = IntanData.board_adc_data(2,:);
+                SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
+           else
                 Stim = IntanData.board_adc_data(1,:);
                 SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
-%            else
-%                 Stim = IntanData.board_adc_data(1,:);
-%                 SaveBinary(Stim,IntanData.path(1:end-1),[erase(IntanData.filename,'.rhd'),'_Stim'],'double');
            end
     end
     
